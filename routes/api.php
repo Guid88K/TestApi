@@ -18,4 +18,7 @@ use App\Http\Controllers\DataController;
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
-Route::get('/search','DataController@search')->name('search');
+Route::resource('/data', 'ApiDateController');
+Route::get('/api_search','DataController@api_search');
+Route::get('/search','DataController@search');
+Route::get('/index','DataController@second_index');

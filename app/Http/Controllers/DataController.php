@@ -41,16 +41,15 @@ class DataController extends Controller
                     }
                 }
             }
-
-//            $csv_data = $data;
-//
-//            $csv_data_file = CsvData::create([
-//                'csv_filename' => $request->file('csv_file')->getClientOriginalName(),
-//                'csv_data' => json_encode($data)
-//            ]);
         } else {
             return redirect()->back();
         }
+        return view('import_field', compact('field_data'));
+    }
+
+    public function second_index()
+    {
+        $field_data = Data::all();
         return view('import_field', compact('field_data'));
     }
 
@@ -62,24 +61,59 @@ class DataController extends Controller
             $good_query->where('name', 'like', '%' . $request->get('name') . '%');
         }
         if ($request->price) {
-            $good_query->where('price', 'like', '%' . $request->get('price') . '%');
+
+            $price = explode('-', $request->get('price'));
+            $good_query->whereBetween('price', [$price[0], $price[1]]);
         }
-        if ($request->bedrooms != 'Select bedrooms') {
-            $good_query->where('bedrooms', 'like', '%' . $request->get('bedrooms') . '%');
-        }
-        if ($request->bathrooms != 'Select bathrooms') {
-            $good_query->where('bathrooms', 'like', '%' . $request->get('bathrooms') . '%');
-        }
-        if ($request->storeys != 'Select storeys') {
-            $good_query->where('storeys', 'like', '%' . $request->get('storeys') . '%');
-        }
-        if ($request->garages != 'Select garages') {
-            $good_query->where('garages', 'like', '%' . $request->get('garages') . '%');
-        }
+//        if ($request->bedrooms != 'Select bedrooms') {
+//
+//            $good_query->where('bedrooms', 'like', '%' . $request->get('bedrooms') . '%');
+//
+//        }
+//        if ($request->bathrooms != 'Select bathrooms') {
+//            $good_query->where('bathrooms', 'like', '%' . $request->get('bathrooms') . '%');
+//        }
+//        if ($request->storeys != 'Select storeys') {
+//            $good_query->where('storeys', 'like', '%' . $request->get('storeys') . '%');
+//        }
+//        if ($request->garages != 'Select garages') {
+//            $good_query->where('garages', 'like', '%' . $request->get('garages') . '%');
+//        }
         $field_data = $good_query->get();
 
         return response()->json($field_data);
     }
 
+    public function api_search(Request $request)
+    {
+//        $search = $request->get('name');
+        $good_query = Data::query();
 
+        if ($request->name) {
+            $good_query->where('name', 'like', '%' . $request->get('name') . '%');
+        }
+        if ($request->price) {
+            $price = explode('-', $request->get('price'));
+            if (isset($price[1])) {
+                $good_query->whereBetween('price', [$price[0], $price[1]]);
+            } else {
+                $good_query->where('price', $price[0]);
+            }
+        }
+        if ($request->bedrooms != '') {
+            $good_query->where('bedrooms', 'like', '%' . $request->get('bedrooms') . '%');
+        }
+        if ($request->bathrooms != '') {
+            $good_query->where('bathrooms', 'like', '%' . $request->get('bathrooms') . '%');
+        }
+        if ($request->storeys != '') {
+            $good_query->where('storeys', 'like', '%' . $request->get('storeys') . '%');
+        }
+        if ($request->garages != '') {
+            $good_query->where('garages', 'like', '%' . $request->get('garages') . '%');
+        }
+        $field_data = $good_query->get();
+
+        return $field_data;
+    }
 }

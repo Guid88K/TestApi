@@ -16,15 +16,18 @@ use App\Data;
 Route::get('/', function () {
     return view('welcome');
 });
-Route::get('/data', function () {
-    $field_data = Data::all();
-    return view('import_field',['field_data'=>$field_data]);
+Route::get('/search', function () {
+    return view('search');
 });
+
 
 Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
 Route::get('/import','DataController@index')->name('view');
 Route::post('/import_parse','DataController@import_csv')->name('import_parse');
+Route::get('/vue-ajax',function (){
+    return view('vue-ajax');
+});
 //Route::post('/import_process', 'ImportController@processImport')->name('import_process');
 
